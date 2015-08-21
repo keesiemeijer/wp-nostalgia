@@ -2,7 +2,7 @@
 
 VVV auto site setup script to install older versions of WordPress without errors.
 
-Most of the earlier versions of WordPress are not compatible with PHP 5.3 or higher and produce (fatal) PHP errors and all kinds of notices if you try to install. Before you know it the famous 5-minute install goes on for hours. And all you wanted to do is reunite with the 2.0 dashboard from when you first started developing (or blogging). Which was super slick compared to version 1.5-strayhorn that came before it. That's right 1.5-strayhorn! Now who doesn't want to check that out (without the errors and notices). This script gives you back the famous 5-Minute Install for [all versions of WordPress](https://wordpress.org/download/release-archive/)!
+Most of the earlier versions of WordPress are not compatible with PHP 5.3 or higher and produce (fatal) PHP errors and all kinds of notices if you try to install. Before you know it the famous 5-minute install goes on for hours. And all you wanted to do is reunite with the 2.0 dashboard from when you first started developing (or blogging) with WordPress. That dashboard was super slick compared to version 1.5-strayhorn that came before it. That's right 1.5-strayhorn! Now who doesn't want to check that out. This script gives you back the famous 5-Minute Install for [all versions of WordPress](https://wordpress.org/download/release-archive/)!
 
 ### To get started:
 1. Setup [Varying Vagrant Vagrants](https://github.com/Varying-Vagrant-Vagrants/VVV) (If you don't already have it)
@@ -33,7 +33,7 @@ bash vvv-init.sh 2.2
 ```
 
 ### Notice!
-
+* Don't use this script for production sites
 * The database and directory for the WordPress install are deleted prior to installing.
 * This script fixes (fatal) errors for earlier versions (WP < 2.0) by hacking core files.
 * This script hides errors by setting error_reporting off in wp-config.php (WP < 3.5.2) and wp-settings.php (WP < 3.0.0)
@@ -63,3 +63,6 @@ WP_VERSION="0.71-gold"
 # Remove errors. Default true
 readonly REMOVE_ERRORS=true
 ```
+
+### Screenshot WordPress 0.71-gold
+![WordPress 0.71-gold](/../master/WordPress-0.71-gold.png?raw=true)
