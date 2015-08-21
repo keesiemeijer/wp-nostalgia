@@ -258,6 +258,13 @@ if [[ "$REMOVE_ERRORS" = true && "$config_error" ]]; then
 		sed -i -e "s/res\[0\]\['Type'\]/res\[0\]->Type/g" "$INSTALL_PATH/wp-admin/upgrade-functions.php"
 	fi
 
+	# errors for version 3.3.*
+	if [[ ${WP_VERSION:0:3} == "3.3" ]]; then
+		if is_file "$INSTALL_PATH/wp-admin/includes/screen.php"; then
+			sed -i -e 's/echo self\:\:\$this->_help_sidebar;/echo \$this->_help_sidebar;/g' "$INSTALL_PATH/wp-admin/includes/screen.php"
+		fi
+	fi
+
 	# Remove errors for versions 0.* and 1.* (error with PHP 5 and higher)
 	if [[ ${WP_VERSION:0:1} == "1" || ${WP_VERSION:0:1} == "0" ]]; then
 		for f in $(find -name "*.php"); do
