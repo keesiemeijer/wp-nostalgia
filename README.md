@@ -63,3 +63,6 @@ WP_VERSION="0.71-gold"
 # Remove errors. Default true
 readonly REMOVE_ERRORS=true
 ```
+
+### Screenshot WordPress 0.71-gold
+![WordPress 0.71-gold](/../master/WordPress-0.71-gold.png?raw=true)
