@@ -202,11 +202,14 @@ else
 		fi	
 
 		if [[ "$REMOVE_ERRORS" = true ]]; then
-			sed -i -e "s/require_once(ABSPATH.'wp-settings.php');/require_once(ABSPATH.'wp-settings.php');\nerror_reporting( ~E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED );/g" "$INSTALL_PATH/$config_file"
-			sed -i -e "s/require_once(ABSPATH . 'wp-settings.php');/require_once(ABSPATH . 'wp-settings.php');\nerror_reporting( ~E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED );/g" "$INSTALL_PATH/$config_file"
+			# SRSLY Don't you dare show me any errors.
+			sed -i -e "s/require_once(ABSPATH.'wp-settings.php');/error_reporting( 0 );\nrequire_once(ABSPATH.'wp-settings.php');\nerror_reporting( 0 );/g" "$INSTALL_PATH/$config_file"
+			sed -i -e "s/require_once(ABSPATH . 'wp-settings.php');/error_reporting( 0 );\nrequire_once(ABSPATH . 'wp-settings.php');\nerror_reporting( 0 );/g" "$INSTALL_PATH/$config_file"
 			if is_file "$INSTALL_PATH/wp-settings.php"; then
-				sed -i -e "s/error_reporting(E_ALL ^ E_NOTICE);/error_reporting( ~E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED );/g" "$INSTALL_PATH/wp-settings.php"
-				sed -i -e "s/error_reporting(E_ALL ^ E_NOTICE ^ E_USER_NOTICE);/error_reporting( ~E_ALL \& ~E_NOTICE \& ~E_STRICT \& ~E_DEPRECATED );/g" "$INSTALL_PATH/wp-settings.php"
+				sed -i -e "s/error_reporting(E_ALL ^ E_NOTICE);/error_reporting( 0 );/g" "$INSTALL_PATH/wp-settings.php"
+				sed -i -e "s/error_reporting(E_ALL ^ E_NOTICE ^ E_USER_NOTICE);/error_reporting( 0 );/g" "$INSTALL_PATH/wp-settings.php"
+				# Database errors
+				sed -i -e "s/\$wpdb->show_errors();/\$wpdb->hide_errors();/g" "$INSTALL_PATH/wp-settings.php"
 			fi
 		fi
 	fi	
@@ -218,7 +221,7 @@ else
 		sed -i -e "s/http:\/\/example.com/http:\/\/$HOME_URL/g" "$INSTALL_PATH/$config_file"
 
 		if [[ "$REMOVE_ERRORS" = true ]]; then
-			printf "\n<?php error_reporting( ~E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED ); ?>\n" >> "$INSTALL_PATH/$config_file"
+			printf "\n<?php error_reporting( 0 ); ?>\n" >> "$INSTALL_PATH/$config_file"
 		fi
 	fi
 
@@ -248,17 +251,7 @@ fi
 if [[ "$REMOVE_ERRORS" = true && "$config_error" ]]; then
 	echo "Removing errors"
 
-	# 0.71-gold (error with PHP 5.3.0 and higher)
-	if is_file "$INSTALL_PATH/b2-include/b2template.functions.php"; then
-		sed -i -e 's/\&\$/\$/g' "$INSTALL_PATH/b2-include/b2template.functions.php"
-	fi
-
-	# (error with PHP 5 and higher)
-	if is_file "$INSTALL_PATH/wp-admin/upgrade-functions.php" ; then
-		sed -i -e "s/res\[0\]\['Type'\]/res\[0\]->Type/g" "$INSTALL_PATH/wp-admin/upgrade-functions.php"
-	fi
-
-	# errors for version 3.3.*
+	# Blank admin screen WP version 3.3.*
 	if [[ ${WP_VERSION:0:3} == "3.3" ]]; then
 		if is_file "$INSTALL_PATH/wp-admin/includes/screen.php"; then
 			sed -i -e 's/echo self\:\:\$this->_help_sidebar;/echo \$this->_help_sidebar;/g' "$INSTALL_PATH/wp-admin/includes/screen.php"
@@ -267,8 +260,23 @@ if [[ "$REMOVE_ERRORS" = true && "$config_error" ]]; then
 
 	# Remove errors for versions 0.* and 1.* (error with PHP 5 and higher)
 	if [[ ${WP_VERSION:0:1} == "1" || ${WP_VERSION:0:1} == "0" ]]; then
+
+		# WP version 0.71-gold (error with PHP 5.3.0 and higher)
+		# Call-time pass-by-reference has been deprecated
+		if is_file "$INSTALL_PATH/b2-include/b2template.functions.php"; then
+			sed -i -e 's/\&\$/\$/g' "$INSTALL_PATH/b2-include/b2template.functions.php"
+		fi
+
+		# Blank Step 3 for the install process
+		# Cannot use object of type stdClass as array (error with PHP 5 and higher)
+		if is_file "$INSTALL_PATH/wp-admin/upgrade-functions.php" ; then
+			sed -i -e "s/res\[0\]\['Type'\]/res\[0\]->Type/g" "$INSTALL_PATH/wp-admin/upgrade-functions.php"
+		fi
+
+		# Deprecated variables
+		# Notice: Undefined variable
 		for f in $(find -name "*.php"); do
-			# (error when PHP 5.0.0 and higher)
+			# (error with PHP 5.0.0 and higher)
 			sed -i -e 's/$HTTP_GET_VARS/$_GET/g' "$f"
 			sed -i -e 's/$HTTP_POST_VARS/$_POST/g' "$f"
 			sed -i -e 's/$HTTP_SERVER_VARS/$_SERVER/g' "$f"
