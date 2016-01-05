@@ -25,7 +25,7 @@ All versions higher than 3.5.2 are installed normally with [WP-CLI](http://wp-cl
 For lower versions the `wp-config.php` file is created with the right database credentials but you still have to finish the install at `wp-nostalgia.dev/readme.html`
 
 ### Usage 
-This script can be used as a standalone script if you already have wp-nostalgia.dev up and running. 
+This script can be used as a standalone script if you already have wp-nostalgia.dev up and running in a folder called `/public` (inside your root directory `/srv/www/wp-nostalgia`). Copy the vvv-init.sh file to the root directory.
 
 Example to install WordPress 2.2. First SSH into the running Vagrant machine with `vagrant ssh`
 
