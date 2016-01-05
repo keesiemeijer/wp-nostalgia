@@ -4,6 +4,8 @@ VVV auto site setup script to install older versions of WordPress without errors
 
 Most of the earlier versions of WordPress are not compatible with PHP 5.3 or higher and produce (fatal) PHP errors and all kinds of notices if you try to install. Before you know it the famous 5-minute install goes on for hours. And all you wanted to do is reunite with the 2.0 dashboard from when you first started developing (or blogging) with WordPress. That dashboard was super slick compared to version 1.5-strayhorn that came before it. That's right 1.5-strayhorn! Now who doesn't want to check that out. This script gives you back the famous 5-Minute Install for [all versions of WordPress](https://wordpress.org/download/release-archive/)!
 
+Notice: WP versions older than 3.9 don't work with PHP 7 and higher because PHP is shipped without the deprecated mysql extensions. To make it work for these older versions you have to install the extentions manually.
+
 ### To get started:
 1. Setup [Varying Vagrant Vagrants](https://github.com/Varying-Vagrant-Vagrants/VVV) (If you don't already have it)
 2. Clone this repo into the www directory of your Vagrant (`www/wp-nostalgia`)
@@ -23,7 +25,7 @@ All versions higher than 3.5.2 are installed normally with [WP-CLI](http://wp-cl
 For lower versions the `wp-config.php` file is created with the right database credentials but you still have to finish the install at `wp-nostalgia.dev/readme.html`
 
 ### Usage 
-This script can be used as a standalone script if you already have wp-nostalgia.dev up and running.
+This script can be used as a standalone script if you already have wp-nostalgia.dev up and running. 
 
 Example to install WordPress 2.2. First SSH into the running Vagrant machine with `vagrant ssh`
 
