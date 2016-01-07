@@ -25,7 +25,7 @@ All versions higher than 3.5.2 are installed normally with [WP-CLI](http://wp-cl
 For lower versions the `wp-config.php` file is created with the right database credentials but you still have to finish the install at `wp-nostalgia.dev/readme.html`
 
 ### Usage 
-This script can be used as a standalone script if you already have wp-nostalgia.dev up and running with WordPress in a folder called `/public` in your root directory. Copy the vvv-init.sh file to the root directory. 
+This script can be used as a standalone script if you already have wp-nostalgia.dev up and running with WordPress in a folder called `/public` in the root directory of your site. Copy the vvv-init.sh file to the root directory. 
 ```
 wp-nostalgia
 -- public
