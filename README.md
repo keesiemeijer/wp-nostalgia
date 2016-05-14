@@ -47,8 +47,13 @@ bash vvv-init.sh 2.2
 * This script hides errors by setting error_reporting off in wp-config.php (WP < 3.5.2) and wp-settings.php (WP < 3.0.0)
 
 ### Database Credentials
-DB Name: wp-nostalgia  
-DB User: wp  
+DB NAME: wp-nostalgia  
+DB USER: wp  
+DB PASS: wp  
+
+# Wordpress credentials
+WP USER: admin  
+WP PASS: password  
 
 ### License   
 License: GPL-2.0+
@@ -70,6 +75,16 @@ WP_VERSION="0.71-gold"
 
 # Remove errors. Default true
 readonly REMOVE_ERRORS=true
+
+# Database credentials
+readonly DB_NAME="wp-nostalgia"
+readonly DB_USER="wp"
+readonly DB_PASS="wp"
+
+# Wordpress credentials
+readonly TITLE="WordPress $WP_VERSION"
+readonly WP_USER="admin"
+readonly WP_PASS="password"
 ```
 
 ### Screenshot WordPress 0.71-gold

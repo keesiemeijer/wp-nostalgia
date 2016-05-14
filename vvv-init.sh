@@ -72,6 +72,16 @@ WP_VERSION="0.71-gold"
 # Remove errors. Default true
 readonly REMOVE_ERRORS=true
 
+# Database credentials
+readonly DB_NAME="wp-nostalgia"
+readonly DB_USER="wp"
+readonly DB_PASS="wp"
+
+# Wordpress credentials
+readonly TITLE="WordPress $WP_VERSION"
+readonly WP_USER="admin"
+readonly WP_PASS="password"
+
 
 # =============================================================================
 # 
@@ -135,10 +145,11 @@ fi
 # Creating database and 'public' directory
 # =============================================================================
 
-printf "Resetting database 'wp-nostalgia'...\n"
-mysql -u root --password=root -e "DROP DATABASE IF EXISTS \`wp-nostalgia\`"
-mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS \`wp-nostalgia\`"
-mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON \`wp-nostalgia\`.* TO wp@localhost IDENTIFIED BY 'wp';"
+printf "Resetting database '$DB_NAME'...\n"
+mysql -u root --password=root -e "DROP DATABASE IF EXISTS \`$DB_NAME\`"
+mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`"
+mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO $DB_USER@localhost IDENTIFIED BY '$DB_PASS';"
+
 
 printf "Creating directory $INSTALL_PATH...\n"
 if ! is_dir "$INSTALL_PATH"; then
@@ -179,12 +190,12 @@ fi
 # =============================================================================
 
 finished=''
-config_error=$(wp core config --dbname=wp-nostalgia --dbuser=wp --dbpass=wp --allow-root 2>&1 >/dev/null)
+config_error=$(wp core config --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_PASS --allow-root 2>&1 >/dev/null)
 
 if [[ ! "$config_error" ]]; then
 	# WP >= 3.5.2
 
-	wp core install --url="$HOME_URL" --title="WordPress $WP_VERSION" --admin_user=admin --admin_password=password --admin_email=demo@example.com --allow-root
+	wp core install --url="$HOME_URL" --title="$TITLE" --admin_user="$WP_USER" --admin_password="$WP_PASS" --admin_email=demo@example.com --allow-root
 	finished="Visit $HOME_URL/wp-admin Username: admin, Password: password"
 else
 	# WP < 3.5.2
@@ -229,18 +240,18 @@ else
 
 		echo "Adding database credentials in $INSTALL_PATH/$config_file"
 
-		sed -i -e "s/database_name_here/wp-nostalgia/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/username_here/wp/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/password_here/wp/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_NAME', 'wordpress');/define('DB_NAME', 'wp-nostalgia');/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_USER', 'username');/define('DB_USER', 'wp');/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_PASSWORD', 'password');/define('DB_PASSWORD', 'wp');/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_NAME', 'putyourdbnamehere');/define('DB_NAME', 'wp-nostalgia');/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_USER', 'usernamehere');/define('DB_USER', 'wp');/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_PASSWORD', 'yourpasswordhere');/define('DB_PASSWORD', 'wp');/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_NAME', 'b2');/define('DB_NAME', 'wp-nostalgia');/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_USER', 'user');/define('DB_USER', 'wp');/g" "$INSTALL_PATH/$config_file"
-		sed -i -e "s/define('DB_PASSWORD', 'pass');/define('DB_PASSWORD', 'wp');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/database_name_here/$DB_NAME/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/username_here/$DB_USER/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/password_here/$DB_PASS/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_NAME', 'wordpress');/define('DB_NAME', '$DB_NAME');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_USER', 'username');/define('DB_USER', '$DB_USER');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_PASSWORD', 'password');/define('DB_PASSWORD', '$DB_PASS');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_NAME', 'putyourdbnamehere');/define('DB_NAME', '$DB_NAME');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_USER', 'usernamehere');/define('DB_USER', '$DB_USER');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_PASSWORD', 'yourpasswordhere');/define('DB_PASSWORD', '$DB_PASS');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_NAME', 'b2');/define('DB_NAME', '$DB_NAME');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_USER', 'user');/define('DB_USER', '$DB_USER');/g" "$INSTALL_PATH/$config_file"
+		sed -i -e "s/define('DB_PASSWORD', 'pass');/define('DB_PASSWORD', '$DB_PASS');/g" "$INSTALL_PATH/$config_file"
 	fi
 fi
 
