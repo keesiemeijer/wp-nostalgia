@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # =============================================================================
 # WP Nostalgia
 #
@@ -78,7 +80,6 @@ readonly DB_USER="wp"
 readonly DB_PASS="wp"
 
 # Wordpress credentials
-readonly TITLE="WordPress $WP_VERSION"
 readonly WP_USER="admin"
 readonly WP_PASS="password"
 
@@ -90,7 +91,7 @@ readonly WP_PASS="password"
 # =============================================================================
 
 # current path
-readonly CURRENT_PATH=`pwd`
+readonly CURRENT_PATH=$(pwd)
 
 # DocumentRoot dir in .conf file (if server is Apache)
 readonly CURRENT_DIR="${PWD##*/}"
@@ -112,7 +113,7 @@ function is_dir() {
 	[[ -d $dir ]]
 }
 
-printf "\nStart Setup '$HOME_URL'...\n"
+printf "\nStart Setup '%s'...\n" "$HOME_URL"
 
 
 # =============================================================================
@@ -120,9 +121,9 @@ printf "\nStart Setup '$HOME_URL'...\n"
 # =============================================================================
 
 if ! is_file "$CURRENT_PATH/vvv-hosts"; then
-	printf "Creating vvv-hosts file in $CURRENT_PATH\n"
+	printf "Creating vvv-hosts file in %s\n" "$CURRENT_PATH"
 	touch "$CURRENT_PATH/vvv-hosts"
-	printf "$HOME_URL\n" >> "$CURRENT_PATH/vvv-hosts"
+	printf "%s\n" "$HOME_URL" >> "%s/vvv-hosts" "$CURRENT_PATH"
 fi
 
 
@@ -132,11 +133,13 @@ fi
 	
 if is_dir "/srv/config/apache-config/sites"; then
 	if ! is_file "/srv/config/apache-config/sites/$CURRENT_DIR.conf"; then
-		cd /srv/config/apache-config/sites
-		printf "Creating $CURRENT_DIR.conf in /srv/config/apache-config/sites/...\n"
-		sed -e "s/testserver\.com/$HOME_URL/" \
-		-e "s/wordpress-local/$CURRENT_DIR\/public/" local-apache-example.conf-sample > "$CURRENT_DIR.conf"
-		rsync -rvzh --delete /srv/config/apache-config/sites/ /etc/apache2/custom-sites/ &>/dev/null		
+		cd /srv/config/apache-config/sites || exit
+		printf "Creating %s.conf in /srv/config/apache-config/sites/...\n" "$CURRENT_DIR"
+		if is_file "/srv/config/apache-config/sites/local-apache-example.conf-sample"; then
+			sed -e "s/testserver\.com/$HOME_URL/" \
+			-e "s/wordpress-local/$CURRENT_DIR\/public/" "local-apache-example.conf-sample" > "$CURRENT_DIR.conf"
+			rsync -rvzh --delete /srv/config/apache-config/sites/ /etc/apache2/custom-sites/ &>/dev/null
+		fi
 	fi
 fi
 
@@ -145,13 +148,13 @@ fi
 # Creating database and 'public' directory
 # =============================================================================
 
-printf "Resetting database '$DB_NAME'...\n"
+printf "Resetting database '%s'...\n" "$DB_NAME"
 mysql -u root --password=root -e "DROP DATABASE IF EXISTS \`$DB_NAME\`"
 mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`"
 mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO $DB_USER@localhost IDENTIFIED BY '$DB_PASS';"
 
 
-printf "Creating directory $INSTALL_PATH...\n"
+printf "Creating directory %s...\n" "$INSTALL_PATH"
 if ! is_dir "$INSTALL_PATH"; then
 	mkdir "$INSTALL_PATH"
 else 
@@ -159,8 +162,7 @@ else
 	mkdir "$INSTALL_PATH"
 fi
 
-cd "$INSTALL_PATH"
-
+cd "$INSTALL_PATH" || exit
 
 # =============================================================================
 # Check Network Detection
@@ -169,21 +171,35 @@ cd "$INSTALL_PATH"
 # to us. If 3 attempts with a timeout of 5 seconds are not successful, then we'll
 # skip a few things further in provisioning rather than create a bunch of errors.
 # =============================================================================
-
-if [[ "$(wget --tries=3 --timeout=5 --spider http://google.com 2>&1 | grep 'connected')" ]]; then
+printf "Checking network connection...\n"
+if ping -c 3 --linger=5 8.8.8.8 >> /dev/null 2>&1; then
 	printf "Network connection detected...\n"
-	printf "Downloading WordPress $WP_VERSION in $INSTALL_PATH...\n"
+	printf "Downloading WordPress %s in %s...\n" "$WP_VERSION" "$INSTALL_PATH"
 else
 	printf "No network connection detected. ...\n"
-	printf "Trying to get WordPress $WP_VERSION from cache...\n"
+	printf "Trying to get WordPress %s from cache...\n" "$WP_VERSION"
 fi
 
 if [[ "$WP_VERSION" = "latest" ]]; then
-	wp core download --allow-root --force
+	wp core download --allow-root --force 2> /dev/null
+	if is_file "$INSTALL_PATH/wp-includes/version.php"; then
+		if grep -q "wp_version = " "$INSTALL_PATH/wp-includes/version.php"; then
+			WP_VERSION=$(grep "wp_version = " "$INSTALL_PATH/wp-includes/version.php"|awk -F\' '{print $2}')
+		fi
+	fi
 else
-	wp core download --version="$WP_VERSION" --force --allow-root
+	wp core download --version="$WP_VERSION" --force --allow-root 2> /dev/null
 fi
 
+# Check if WordPress was downloaded
+if ! is_file "$INSTALL_PATH/wp-config-sample.php"; then
+	printf "Could not install WordPress. ...\n"
+	printf "Make sure you are connected to the internet. ...\n"
+	exit
+fi
+
+readonly TITLE="Wordpress $WP_VERSION"
+readonly WP_VERSION="$WP_VERSION"
 
 # =============================================================================
 # Installing WordPress
@@ -265,7 +281,7 @@ if [[ "$REMOVE_ERRORS" = true && "$config_error" ]]; then
 	# Blank admin screen WP version 3.3.*
 	if [[ ${WP_VERSION:0:3} == "3.3" ]]; then
 		if is_file "$INSTALL_PATH/wp-admin/includes/screen.php"; then
-			sed -i -e 's/echo self\:\:\$this->_help_sidebar;/echo \$this->_help_sidebar;/g' "$INSTALL_PATH/wp-admin/includes/screen.php"
+			sed -i -e "s/echo self\:\:\$this->_help_sidebar;/echo \$this->_help_sidebar;/g" "$INSTALL_PATH/wp-admin/includes/screen.php"
 		fi
 	fi
 
@@ -284,18 +300,19 @@ if [[ "$REMOVE_ERRORS" = true && "$config_error" ]]; then
 			sed -i -e "s/res\[0\]\['Type'\]/res\[0\]->Type/g" "$INSTALL_PATH/wp-admin/upgrade-functions.php"
 		fi
 
-		# Deprecated variables
-		# Notice: Undefined variable
-		for f in $(find -name "*.php"); do
-			# (error with PHP 5.0.0 and higher)
-			sed -i -e 's/$HTTP_GET_VARS/$_GET/g' "$f"
-			sed -i -e 's/$HTTP_POST_VARS/$_POST/g' "$f"
-			sed -i -e 's/$HTTP_SERVER_VARS/$_SERVER/g' "$f"
-			sed -i -e 's/$HTTP_COOKIE_VARS/$_COOKIE/g' "$f"
-		done
+
+		find "$INSTALL_PATH" ! -name "$(printf "*\n*")" -name "*.php" > tmp
+		while IFS= read -r file
+		do
+			sed -i -e "s/\$HTTP_GET_VARS/\$_GET/g" "$file"
+			sed -i -e "s/\$HTTP_POST_VARS/\$_POST/g" "$file"
+			sed -i -e "s/\$HTTP_SERVER_VARS/\$_SERVER/g" "$file"
+			sed -i -e "s/\$HTTP_COOKIE_VARS/\$_COOKIE/g" "$file"
+		done < tmp
+		rm tmp
 	fi
 fi
 
-printf "\nFinished Setup $HOME_URL with version: $WP_VERSION!\n"
-echo $finished
+printf "\nFinished Setup %s with version: %s!\n" "$HOME_URL" "$WP_VERSION"
+echo "$finished"
 echo ""
