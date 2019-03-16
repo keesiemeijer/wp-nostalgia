@@ -22,18 +22,15 @@
 #
 #
 # After provisioning
-#     (WP < 3.5.2)  Go to wp-nostalgia.dev/readme.html and follow the install instructions
-#     (WP >= 3.5.2) Go to wp-nostalgia.dev/wp-admin and log in with: Username: admin, Password: password.
+#     (WP < 3.5.2)  Go to wp-nostalgia.test/readme.html and follow the install instructions
+#     (WP >= 3.5.2) Go to wp-nostalgia.test/wp-admin and log in with: Username: admin, Password: password.
 #
 #
-# This bash script can be used as a standalone script if you've already have wp-nostalgia.dev running.
+# This bash script can be used as a standalone script if you've already have wp-nostalgia.test running.
 # Example install WordPress 2.2:
 #     vagrant ssh
 #     cd path/to/this/vvv-init.sh
 #     bash vvv-init.sh 2.2
-#
-# Compatible with the VVV Apache variant.
-# https://github.com/ericmann/vvv-apache
 # 
 # Credentials
 #     DB Name: wp-nostalgia
@@ -62,7 +59,7 @@
 
 # Domain name
 # Note: If edited, you'll need to edit it in the vvv-hosts and the vvv-nginx.conf files as well.
-readonly HOME_URL="wp-nostalgia.dev"
+readonly HOME_URL="wp-nostalgia.test"
 
 
 # WordPress version to be installed. Default: "0.71-gold"
@@ -125,24 +122,6 @@ if ! is_file "$CURRENT_PATH/vvv-hosts"; then
 	touch "$CURRENT_PATH/vvv-hosts"
 	printf "%s\n" "$HOME_URL" >> "%s/vvv-hosts" "$CURRENT_PATH"
 fi
-
-
-# =============================================================================
-# Create .conf file if Apache
-# =============================================================================
-	
-if is_dir "/srv/config/apache-config/sites"; then
-	if ! is_file "/srv/config/apache-config/sites/$CURRENT_DIR.conf"; then
-		cd /srv/config/apache-config/sites || exit
-		printf "Creating %s.conf in /srv/config/apache-config/sites/...\n" "$CURRENT_DIR"
-		if is_file "/srv/config/apache-config/sites/local-apache-example.conf-sample"; then
-			sed -e "s/testserver\.com/$HOME_URL/" \
-			-e "s/wordpress-local/$CURRENT_DIR\/public/" "local-apache-example.conf-sample" > "$CURRENT_DIR.conf"
-			rsync -rvzh --delete /srv/config/apache-config/sites/ /etc/apache2/custom-sites/ &>/dev/null
-		fi
-	fi
-fi
-
 
 # =============================================================================
 # Creating database and 'public' directory

@@ -12,20 +12,20 @@ Notice: WP versions older than 3.9 don't work with PHP 7 and higher because PHP 
 3. If your Vagrant is running, from the Vagrant directory run `vagrant halt`
 4. Followed by `vagrant up --provision`. 
 
-You can now visit [http://wp-nostalgia.dev/readme.html](http://wp-nostalgia.dev/readme.html).
+You can now visit [http://wp-nostalgia.test/readme.html](http://wp-nostalgia.test/readme.html).
 By default it has installed the very first version `0.71-gold`.
 
-Note: If you don't have the vagrant plugin `vagrant-hostsupdater` installed you'll need to add the domain to your `hosts` file manually before you can visit [http://wp-nostalgia.dev/](http://wp-nostalgia.dev/).
+Note: If you don't have the vagrant plugin `vagrant-hostsupdater` installed you'll need to add the domain to your `hosts` file manually before you can visit [http://wp-nostalgia.test/](http://wp-nostalgia.test/).
 
 ### After provisioning
-* (WP < 3.5.2)  Go to wp-nostalgia.dev/readme.html and follow the install instructions
-* (WP >= 3.5.2) Go to wp-nostalgia.dev/wp-admin and log in with: Username: admin, Password: password
+* (WP < 3.5.2)  Go to wp-nostalgia.test/readme.html and follow the install instructions
+* (WP >= 3.5.2) Go to wp-nostalgia.test/wp-admin and log in with: Username: admin, Password: password
 
 All versions higher than 3.5.2 are installed normally with [WP-CLI](http://wp-cli.org/).  
-For lower versions the `wp-config.php` file is created with the right database credentials but you still have to finish the install at `wp-nostalgia.dev/readme.html`
+For lower versions the `wp-config.php` file is created with the right database credentials but you still have to finish the install at `wp-nostalgia.test/readme.html`
 
 ### Usage 
-This script can be used as a standalone script if you already have wp-nostalgia.dev up and running with WordPress in a folder called `/public` in the root directory of your site. Copy the vvv-init.sh file to the root directory. 
+This script can be used as a standalone script if you already have wp-nostalgia.test up and running with WordPress in a folder called `/public` in the root directory of your site. Copy the vvv-init.sh file to the root directory. 
 ```
 wp-nostalgia
 -- public
@@ -64,7 +64,7 @@ Variables you can set in the vvv-init.sh file.
 ```bash
 # Domain name
 # Note: If edited, you'll need to edit it in the vvv-hosts and the vvv-nginx.conf files as well.
-readonly HOME_URL="wp-nostalgia.dev"
+readonly HOME_URL="wp-nostalgia.test"
 
 
 # WordPress version to be installed. Default: "0.71-gold"
