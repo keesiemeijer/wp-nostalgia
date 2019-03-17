@@ -4,7 +4,7 @@ VVV auto site setup script to install older versions of WordPress without errors
 
 Most of the earlier versions of WordPress are not compatible with PHP 5.3 or higher and produce (fatal) PHP errors and all kinds of notices if you try to install. Before you know it the famous 5-minute install goes on for hours. And all you wanted to do is reunite with the 2.0 dashboard from when you first started developing (or blogging) with WordPress. That dashboard was super slick compared to version 1.5-strayhorn that came before it. That's right 1.5-strayhorn! Now who doesn't want to check that out. This script gives you back the famous 5-Minute Install for [all versions of WordPress](https://wordpress.org/download/release-archive/)!
 
-Notice: WP versions older than 3.9 don't work with PHP 7 and higher because PHP 7 is shipped without the deprecated mysql extensions. Make it work for these older WP versions by installing the extentions manually.
+Notice: WP versions older than 3.9 don't work with PHP 7 and higher because PHP 7 is shipped without the deprecated mysql extensions. Make it work for these older WP versions by installing the extensions manually. See [#992](https://github.com/Varying-Vagrant-Vagrants/VVV/issues/992)
 
 ### To get started:
 1. Setup [Varying Vagrant Vagrants](https://github.com/Varying-Vagrant-Vagrants/VVV) (If you don't already have it)
